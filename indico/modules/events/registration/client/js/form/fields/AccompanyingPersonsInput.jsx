@@ -65,7 +65,7 @@ const TShirtChoices = [
   'Fitted 3XL',
 ];
 
-const receptionCost = 64;
+const receptionCost = 0;
 
 function AccompanyingPersonModal({value, header, onSubmit, onClose}) {
   return (
@@ -111,7 +111,8 @@ function AccompanyingPersonModal({value, header, onSubmit, onClose}) {
       />
       <FinalCheckbox
         name="reception"
-        label={`${Translate.string('Ticket for the reception')} ($${receptionCost})`}
+        // label={`${Translate.string('Ticket for the reception')} ($${receptionCost})`}
+        label={`${Translate.string('Ticket for the reception')} (free for early registration)`}
       />
       <FinalTextArea name="comments" label={Translate.string('Comments')} />
     </FinalModalForm>
