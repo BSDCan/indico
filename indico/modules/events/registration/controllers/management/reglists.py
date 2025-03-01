@@ -166,15 +166,16 @@ def _get_merged_registrations(event):
 
     # After sorting, expand any "accompanying persons" into additional rows.
     # (We want these people to come immediately after their "main registration".
-    accompanying_persons_index = column_headers.index('Extra people')
-    newrows = []
-    for row in rows:
-        newrows.append(row)
+    if 'Extra people' in column_headers:
+        accompanying_persons_index = column_headers.index('Extra people')
+        newrows = []
+        for row in rows:
+            newrows.append(row)
 
-        accompanying_persons = row['columns'][accompanying_persons_index]['text']
-        if accompanying_persons:
-            _expand_extra(newrows, column_headers, accompanying_persons)
-    rows = newrows
+            accompanying_persons = row['columns'][accompanying_persons_index]['text']
+            if accompanying_persons:
+                _expand_extra(newrows, column_headers, accompanying_persons)
+        rows = newrows
 
     return {'headers': column_headers,
             'rows': rows,
