@@ -25,7 +25,7 @@ class AccompanyingPersonSchema(mm.Schema):
     pronouns = fields.String(required=False)
     dietary = fields.List(fields.String(), required=False)
     tshirt = fields.String(required=False)
-    closingParty = fields.Boolean(required=False)  # noqa: N815
+    reception = fields.Boolean(required=False)  # noqa: N815
     comments = fields.String(required=False)
 
     @pre_load
@@ -82,7 +82,7 @@ class AccompanyingPersonsField(RegistrationFormBillableField):
     def calculate_price(self, reg_data, versioned_data):
         total_price = versioned_data.get('price', 0) * len(reg_data)
         for reg in reg_data:
-            if 'closingParty' in reg and reg['closingParty']:
+            if 'reception' in reg and reg['reception']:
                 total_price += CLOSING_PARTY_PRICE
         return total_price
 
@@ -94,9 +94,9 @@ class AccompanyingPersonsField(RegistrationFormBillableField):
             pronouns = entry.get('pronouns', '')
             dietary = ','.join(entry.get('dietary', ''))
             tshirt = entry.get('tshirt', '')
-            closing_party = entry.get('closingParty', 'False')
+            reception = entry.get('reception', 'False')
             comments = entry.get('comments', '')
-            return f'{first_name} | {last_name} | {pronouns} | {dietary} | {tshirt} | {closing_party} | {comments}'
+            return f'{first_name} | {last_name} | {pronouns} | {dietary} | {tshirt} | {reception} | {comments}'
 
         reg_data = registration_data.data
         if not reg_data:
