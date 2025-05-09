@@ -15,7 +15,7 @@ from indico.util.i18n import _
 from indico.util.marshmallow import not_empty
 
 
-CLOSING_PARTY_PRICE = 0
+CLOSING_PARTY_PRICE = 64
 
 
 class AccompanyingPersonSchema(mm.Schema):
