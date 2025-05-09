@@ -92,6 +92,9 @@ def _get_merged_registrations(event):
                 person_data[field_title] = reg.data_by_field[field_id].get_friendly_data()
 
         row = [{'text': person_data.get(t, '')} for t in column_headers]
+        # Include the indico 'state' and registration time
+        row.append({'text': reg.state})
+        row.append({'text': reg.submitted_dt})
         # Include which form this registration came from.
         row.append({'text': reg.registration_form.title})
         return {'columns': row}
@@ -148,6 +151,8 @@ def _get_merged_registrations(event):
 
     # Get the data
     rows = [_process_registration(reg, fields, column_headers) for reg in query]
+    column_headers.append('State')
+    column_headers.append('Reg date')
     column_headers.append('From form')
 
     # Some fields may end up being ['text'] = ['value'], which is silly (and
