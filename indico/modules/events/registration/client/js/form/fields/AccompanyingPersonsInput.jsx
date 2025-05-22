@@ -110,7 +110,7 @@ function AccompanyingPersonModal({value, header, onSubmit, onClose}) {
         selection
       />
       <FinalCheckbox
-        name="reception"
+        name="receptionPaid"
         label={`${Translate.string('Ticket for the reception')} ($${receptionCost})`}
       />
       <FinalTextArea name="comments" label={Translate.string('Comments')} />
@@ -127,6 +127,7 @@ AccompanyingPersonModal.propTypes = {
     dietary: PropTypes.array,
     tshirt: PropTypes.string,
     reception: PropTypes.bool,
+    receptionPaid: PropTypes.bool,
     comments: PropTypes.string,
   }),
   header: PropTypes.string.isRequired,
@@ -143,6 +144,7 @@ AccompanyingPersonModal.defaultProps = {
     dietary: null,
     tshirt: null,
     reception: null,
+    receptionPaid: null,
     comments: null,
   },
 };
@@ -185,7 +187,7 @@ function calculatePlaces(availablePlaces, maxPersons, personsInCurrentField, ite
 function numParties(value) {
   let count = 0;
   for (let i = 0; i < value.length; i++) {
-    if (value[i].reception) {
+    if (value[i].receptionPaid) {
       count++;
     }
   }
@@ -259,6 +261,7 @@ function AccompanyingPersonsComponent({
               {person.dietary !== undefined && `${person.dietary.join(', ')} | `}
               {person.tshirt !== undefined && `${person.tshirt} | `}
               {person.reception !== undefined && `${person.reception} | `}
+              {person.receptionPaid !== undefined && `${person.receptionPaid} | `}
               {person.comments}
             </span>
             <div styleName="actions">
@@ -325,6 +328,7 @@ AccompanyingPersonsComponent.propTypes = {
       dietary: PropTypes.array,
       tshirt: PropTypes.string,
       reception: PropTypes.bool,
+      receptionPaid: PropTypes.bool,
       comments: PropTypes.string,
     })
   ).isRequired,
