@@ -107,8 +107,38 @@ class RHAbstractList(DisplayAbstractListMixin, RHAbstractListBase):
     template = 'management/abstract_list.html'
     view_class = WPManageAbstracts
 
+    def _count_states(self):
+        query = Abstract.query.with_parent(self.event)
+        abstracts = query.all()
+        states_stats = defaultdict(int)
+        for abstract in abstracts:
+            match abstract.state:
+                case AbstractState.submitted:
+                    # The internal state is "submitted" (as opposed to
+                    # "accepted" or "rejected"), but technically every single
+                    # abstract in the system is a submitted abstract (as
+                    # non-programmers would understand the term).  To reduce
+                    # confusion amongst judges, let's call this "waiting".
+                    states_stats['waiting'] += 1
+                case AbstractState.withdrawn:
+                    states_stats['withdrawn'] += 1
+                case AbstractState.accepted:
+                    states_stats['accepted'] += 1
+                case AbstractState.duplicate:
+                    states_stats['duplicate'] += 1
+                case AbstractState.merged:
+                    states_stats['merged'] += 1
+                case AbstractState.rejected:
+                    states_stats['rejected'] += 1
+                case AbstractState.invited:
+                    states_stats['invited'] += 1
+                case _:
+                    raise ValueError(f'Unrecognized state: {abstract.state}')
+        return ', '.join([f'{k}: {v}' for k, v in sorted(states_stats.items())])
+
     def _render_template(self, **kwargs):
         kwargs['track_session_map'] = {track.id: track.default_session_id for track in self.event.tracks}
+        kwargs['abstract_state_stats'] = self._count_states()
         can_create = can_create_invited_abstracts(self.event)
         return super()._render_template(can_create_invited_abstracts=can_create, **kwargs)
 
