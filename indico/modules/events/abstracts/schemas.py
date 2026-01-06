@@ -98,6 +98,7 @@ class AbstractSchema(mm.SQLAlchemyAutoSchema):
     reviewer_proposals = String()
     score = Float()
     score_std = Float()
+    raw_scores = String()
     comments = Nested(AbstractCommentSchema, many=True)
     reviews = Nested(AbstractReviewSchema, many=True)
 
@@ -113,7 +114,7 @@ class AbstractSchema(mm.SQLAlchemyAutoSchema):
                   'accepted_track', 'submitted_for_tracks', 'reviewed_for_tracks',
                   'duplicate_of', 'merged_into',
                   'persons', 'custom_fields', 'files', 'reviewer_proposals',
-                  'score', 'score_std', 'comments', 'reviews')
+                  'score', 'score_std', 'raw_scores', 'comments', 'reviews')
 
 
 abstracts_schema = AbstractSchema(many=True)

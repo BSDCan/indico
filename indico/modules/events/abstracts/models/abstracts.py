@@ -484,6 +484,16 @@ class Abstract(ProposalMixin, ProposalRevisionMixin, DescriptionMixin, CustomFie
         return statistics.pstdev(scores)
 
     @property
+    def raw_scores(self) -> str:
+        reviewer_scores = []
+        for r in self.reviews:
+            if not r.scores:
+                continue
+            reviewer_score = ', '.join([str(s) for s in r.scores.values()])
+            reviewer_scores.append(reviewer_score)
+        return ' || '.join(reviewer_scores)
+
+    @property
     def track_question_scores(self):
         sums = defaultdict(Counter)
         lens = defaultdict(Counter)
