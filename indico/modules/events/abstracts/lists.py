@@ -54,6 +54,7 @@ class AbstractListGeneratorBase(ListGeneratorBase):
             'score': {'title': _('Score')},
             'score_std': {'title': _('Score standard deviation')},
             'raw_scores': {'title': _('Raw scores')},
+            'reviewer_comments': {'title': _('Reviewer comments')},
             'submitted_dt': {'title': _('Submission date')},
             'modified_dt': {'title': _('Modification date')},
             'description': {'title': _('Content')},

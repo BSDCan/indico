@@ -93,6 +93,7 @@ def generate_spreadsheet_from_abstracts(abstracts, static_item_ids, dynamic_item
         'score_std': ('Score standard deviation',
                       lambda x: round(x.score_std, 1) if x.score_std is not None else None),
         'raw_scores': ('Raw scores', lambda x: x.raw_scores),
+        'reviewer_comments': ('Reviewer comments', lambda x: x.reviewer_comments),
         'submitted_dt': ('Submission date', lambda x: x.submitted_dt),
         'modified_dt': ('Modification date', lambda x: x.modified_dt or ''),
         'description': ('Content', lambda x: x.description),

@@ -494,6 +494,13 @@ class Abstract(ProposalMixin, ProposalRevisionMixin, DescriptionMixin, CustomFie
         return ' || '.join(reviewer_scores)
 
     @property
+    def reviewer_comments(self) -> str:
+        comments = []
+        comments.extend([r.comment for r in self.reviews if r.comment])
+        comments.extend([c.text for c in self.comments if c.text])
+        return ' || '.join(comments)
+
+    @property
     def track_question_scores(self):
         sums = defaultdict(Counter)
         lens = defaultdict(Counter)
