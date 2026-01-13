@@ -28,6 +28,7 @@ Improvements
 - Allow sending account creation notifications to specific email addresses (:issue:`7166`,
   :pr:`7233`, thanks :user:`duartegalvao`)
 - Support markdown in survey introduction text (:pr:`7260`)
+- Add a 'reviewer proposals' column to the abstract list (:pr:`7258`)
 
 Bugfixes
 ^^^^^^^^
