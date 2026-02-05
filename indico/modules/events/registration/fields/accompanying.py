@@ -22,11 +22,16 @@ class AccompanyingPerson(PersonMixin):
     def __init__(self, entry):
         self.first_name = entry['firstName']
         self.last_name = entry['lastName']
+        # The user is not required to fill in these fields (and registrations
+        # from previous years might not have them at all!), so we need to
+        # specify default values.
+        self.comments = entry.get('comments', '')
 
     def display_str(self):
         values = [
             self.first_name,
             self.last_name,
+            self.comments,
         ]
         return ' | '.join(values)
 
@@ -35,6 +40,7 @@ class AccompanyingPersonSchema(mm.Schema):
     id = fields.UUID()
     firstName = fields.String(required=True, validate=not_empty)  # noqa: N815
     lastName = fields.String(required=True, validate=not_empty)  # noqa: N815
+    comments = fields.String(required=False)
 
     @pre_load
     def _generate_new_uuid(self, data, **kwargs):

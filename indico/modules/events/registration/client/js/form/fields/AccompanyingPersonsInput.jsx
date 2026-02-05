@@ -12,7 +12,13 @@ import {useFormState} from 'react-final-form';
 import {useSelector} from 'react-redux';
 import {Button, Form, Label} from 'semantic-ui-react';
 
-import {FinalCheckbox, FinalField, FinalInput, validators as v} from 'indico/react/forms';
+import {
+  FinalCheckbox,
+  FinalField,
+  FinalInput,
+  FinalTextArea,
+  validators as v,
+} from 'indico/react/forms';
 import {FinalModalForm} from 'indico/react/forms/final-form';
 import {Translate} from 'indico/react/i18n';
 
@@ -33,6 +39,7 @@ function AccompanyingPersonModal({value, header, onSubmit, onClose}) {
     >
       <FinalInput name="firstName" label={Translate.string('First Name')} required autoFocus />
       <FinalInput name="lastName" label={Translate.string('Last Name')} required />
+      <FinalTextArea name="comments" label={Translate.string('Comments')} />
     </FinalModalForm>
   );
 }
@@ -42,6 +49,7 @@ AccompanyingPersonModal.propTypes = {
     id: PropTypes.string.isRequired,
     firstName: PropTypes.string.isRequired,
     lastName: PropTypes.string.isRequired,
+    comments: PropTypes.string,
   }),
   header: PropTypes.string.isRequired,
   onSubmit: PropTypes.func.isRequired,
@@ -53,6 +61,7 @@ AccompanyingPersonModal.defaultProps = {
     id: null,
     firstName: null,
     lastName: null,
+    comments: null,
   },
 };
 
@@ -154,6 +163,9 @@ function AccompanyingPersonsComponent({
             <span>
               {person.firstName} {person.lastName}
             </span>
+            <span style={{marginLeft: '2em'}}>
+              {person.comments !== undefined && `${person.comments}`}
+            </span>
             <div styleName="actions">
               <a
                 className="icon-edit"
@@ -216,6 +228,7 @@ AccompanyingPersonsComponent.propTypes = {
       id: PropTypes.string.isRequired,
       firstName: PropTypes.string.isRequired,
       lastName: PropTypes.string.isRequired,
+      comments: PropTypes.string,
     })
   ).isRequired,
   disabled: PropTypes.bool,
