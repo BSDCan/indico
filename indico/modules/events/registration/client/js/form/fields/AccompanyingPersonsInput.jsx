@@ -68,6 +68,14 @@ const TShirtOptions = [
   'Ladies 3XL',
 ];
 
+const ReceptionOptions = [
+  'No',
+  // BSDCAN: only enable one 'Yes' at once (after testing is finished)
+  'Yes (free until May 1)',
+  `Yes (cost $64)`,
+  // Comment so that the linter allows this to be a list, not all one line.
+];
+
 function AccompanyingPersonModal({value, header, onSubmit, onClose}) {
   return (
     <FinalModalForm
@@ -124,6 +132,16 @@ function AccompanyingPersonModal({value, header, onSubmit, onClose}) {
         }))}
         selection
       />
+      <FinalDropdown
+        name="reception"
+        label={Translate.string('Closing Reception')}
+        options={ReceptionOptions.map(reception => ({
+          key: reception,
+          value: reception,
+          text: Translate.string(reception),
+        }))}
+        selection
+      />
       <FinalTextArea name="comments" label={Translate.string('Comments')} />
     </FinalModalForm>
   );
@@ -138,6 +156,7 @@ AccompanyingPersonModal.propTypes = {
     dietary: PropTypes.array,
     beverage: PropTypes.array,
     tshirt: PropTypes.string,
+    reception: PropTypes.string,
     comments: PropTypes.string,
   }),
   header: PropTypes.string.isRequired,
@@ -154,6 +173,7 @@ AccompanyingPersonModal.defaultProps = {
     dietary: null,
     beverage: null,
     tshirt: null,
+    reception: null,
     comments: null,
   },
 };
@@ -193,6 +213,18 @@ function calculatePlaces(availablePlaces, maxPersons, personsInCurrentField, ite
   }
 }
 
+function totalReceptionCost(value) {
+  let totalCost = 0;
+  for (let i = 0; i < value.length; i++) {
+    const reception = value[i].reception;
+    if (reception && reception.includes('Yes (cost')) {
+      const cost = parseInt(reception.slice('Yes (cost $'.length, -1), 10);
+      totalCost += cost;
+    }
+  }
+  return totalCost;
+}
+
 function AccompanyingPersonsComponent({
   id,
   value,
@@ -204,7 +236,7 @@ function AccompanyingPersonsComponent({
 }) {
   const [operation, setOperation] = useState({type: null, person: null});
   const formatPrice = useSelector(getPriceFormatter);
-  const totalPrice = (value.length * price).toFixed(2);
+  const totalPrice = (value.length * price + totalReceptionCost(value)).toFixed(2);
   const items = useSelector(getItems);
   const formState = useFormState();
 
@@ -261,6 +293,7 @@ function AccompanyingPersonsComponent({
               {person.dietary !== undefined && `${person.dietary.join(', ')} | `}
               {person.beverage !== undefined && `${person.beverage.join(', ')} | `}
               {person.tshirt !== undefined && `${person.tshirt} | `}
+              {person.reception !== undefined && `${person.reception} | `}
               {person.comments !== undefined && `${person.comments}`}
             </span>
             <div styleName="actions">
@@ -329,6 +362,7 @@ AccompanyingPersonsComponent.propTypes = {
       dietary: PropTypes.array,
       beverage: PropTypes.array,
       tshirt: PropTypes.string,
+      reception: PropTypes.string,
       comments: PropTypes.string,
     })
   ).isRequired,

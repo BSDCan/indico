@@ -29,6 +29,7 @@ class AccompanyingPerson(PersonMixin):
         self.dietary = entry.get('dietary', '')
         self.beverage = entry.get('beverage', '')
         self.tshirt = entry.get('tshirt', '')
+        self.reception = entry.get('reception', '')
         self.comments = entry.get('comments', '')
 
     def display_str(self):
@@ -39,6 +40,7 @@ class AccompanyingPerson(PersonMixin):
             ', '.join(self.dietary),
             ', '.join(self.beverage),
             self.tshirt,
+            self.reception,
             self.comments,
         ]
         return ' | '.join(values)
@@ -52,6 +54,7 @@ class AccompanyingPersonSchema(mm.Schema):
     dietary = fields.List(fields.String(), required=False)
     beverage = fields.List(fields.String(), required=False)
     tshirt = fields.String(required=False)
+    reception = fields.String(required=False)
     comments = fields.String(required=False)
 
     @pre_load
@@ -113,7 +116,14 @@ class AccompanyingPersonsField(RegistrationFormBillableField):
             # this gets called when getting the old price during an update, but when the field was
             # added after the registration was created, there is no reg data yet.
             return 0
-        return Decimal(str(versioned_data.get('price', 0))) * len(reg_data)
+        total_price = Decimal(str(versioned_data.get('price', 0))) * len(reg_data)
+        for reg in reg_data:
+            reception = reg.get('reception', '')
+            if 'Yes (cost' in reception:
+                # Get the cost from the value
+                cost = Decimal(reception[len('Yes (cost $'):-1])
+                total_price += cost
+        return total_price
 
     def get_friendly_data(self, registration_data, for_humans=False, for_search=False):
         reg_data = registration_data.data
