@@ -46,6 +46,7 @@ from indico.modules.events.registration.forms import (BadgeSettingsForm, CreateM
                                                       EmailRegistrantsForm, ImportRegistrationsForm, PublishReceiptForm,
                                                       RegistrationBasePriceForm,
                                                       RegistrationExceptionalModificationForm, RejectRegistrantsForm)
+from indico.modules.events.registration.models.forms import RegistrationForm
 from indico.modules.events.registration.models.items import PersonalDataType, RegistrationFormItemType
 from indico.modules.events.registration.models.registrations import Registration, RegistrationData, RegistrationState
 from indico.modules.events.registration.notifications import (notify_registration_receipt_created,
@@ -80,6 +81,129 @@ from indico.web.util import jsonify_data, jsonify_form, jsonify_template
 
 badge_cache = make_scoped_cache('badge-printing')
 
+# This must match the order in accompanying.py, and match the exact
+# field titles which will be used on the registration form(s).
+EXTRA_PERSONS_FIELDS = ['First Name', 'Last Name', 'Pronouns',
+                        'Dietary Restrictions', 'Beverage Preference',
+                        'T-shirt', 'Closing Reception',
+                        'Comments']
+
+
+def _get_merged_registrations(event):
+    def _get_all_fields(event):
+        """Return a list of (id, title) for all fields on all forms."""
+        fields = []
+        forms = (RegistrationForm.query.with_parent(event)
+                 .filter(~RegistrationForm.is_deleted)
+                 )
+        for form in forms:
+            fields.extend([(field.id, field.title) for field in form.active_fields])
+        # Sort by field ID; this puts the "personal" fields first.
+        fields.sort()
+        return fields
+
+    def _process_registration(reg, fields, column_headers):
+        # Match each person's data to the column headers.
+        person_data = {}
+        for field_id, field_title in fields:
+            if field_id in reg.data_by_field:
+                person_data[field_title] = reg.data_by_field[field_id].get_friendly_data()
+
+        row = [{'text': person_data.get(t, '')} for t in column_headers]
+        # Include the indico 'state' and registration time
+        row.append({'text': reg.state})
+        row.append({'text': reg.submitted_dt})
+        # Include which form this registration came from.
+        row.append({'text': reg.registration_form.title})
+        return {'columns': row}
+
+    def _expand_extra(newrows, headers, extra_persons):
+        # Assume that there are no double-pipe chars in any of the fields.
+        extras = extra_persons.split('||')
+
+        # Get the name & email of the registration these people "belong" to.
+        main_person = '{} {} {}'.format(newrows[-1]['columns'][0]['text'],
+                                    newrows[-1]['columns'][1]['text'],
+                                    newrows[-1]['columns'][2]['text'])
+
+        for extra in extras:
+            # Assume that there are no pipe '|' chars, other than possibly in
+            # the "comment" box.
+            split_extra = extra.split('|')
+
+            extrarow = []
+            for h in headers:
+                # Skip; we'll handle comments at the end.
+                if h == 'Comments':
+                    extrarow.append({'text': 'TO BE CHANGED'})
+                    continue
+                if h in EXTRA_PERSONS_FIELDS:
+                    se_i = EXTRA_PERSONS_FIELDS.index(h)
+                    # Move the value to the extra row.
+                    extrarow.append({'text': split_extra[se_i].strip()})
+                    split_extra[se_i] = ''
+                else:
+                    # This field is not part of the AccompanyingPersons.
+                    extrarow.append({'text': ''})
+
+            # Final column; include anything that's not already moved.
+            h = 'Comments'
+            col = headers.index(h)
+            se_i = EXTRA_PERSONS_FIELDS.index(h)
+            extrarow[col] = {'text': ' '.join(split_extra).strip()}
+
+            # Fill in the "From form" column
+            extrarow[-1] = {'text': main_person}
+
+            # Add to rows
+            newrows.append({'columns': extrarow})
+
+    # Get all fields, and field titles without repetition
+    fields = _get_all_fields(event)
+    column_headers = list(dict.fromkeys([x[1] for x in fields]))
+
+    # Get all non-deleted registrations.
+    query = (Registration.query.with_parent(event)
+             .filter(~Registration.is_deleted)
+             .join(Registration.registration_form))
+
+    # Get the data
+    rows = [_process_registration(reg, fields, column_headers) for reg in query]
+    column_headers.append('State')
+    column_headers.append('Reg date')
+    column_headers.append('From form')
+
+    # Some fields may end up being ['text'] = ['value'], which is silly (and
+    # makes sorting much more difficult).
+    def eliminate_list_singletons(values):
+        for i, val in enumerate(values['columns']):
+            x = val['text']
+            if isinstance(x, list) and len(x) == 1:
+                values['columns'][i]['text'] = x[0]
+        return values
+    rows = [eliminate_list_singletons(x) for x in rows]
+
+    # Sort rows
+    rows = sorted(rows,
+                  key=lambda reg: tuple(x['text'] for x in reg['columns']))
+
+    # After sorting, expand any "accompanying persons" into additional rows.
+    # (We want these people to come immediately after their "main registration".
+    if 'Extra people' in column_headers:
+        accompanying_persons_index = column_headers.index('Extra people')
+        newrows = []
+        for row in rows:
+            newrows.append(row)
+
+            accompanying_persons = row['columns'][accompanying_persons_index]['text']
+            if accompanying_persons:
+                _expand_extra(newrows, column_headers, accompanying_persons)
+        rows = newrows
+
+    return {'headers': column_headers,
+            'rows': rows,
+            'num_registrations': query.count()}
+
 
 def _render_registration_details(registration):
     from indico.modules.events.registration.schemas import RegistrationTagSchema
@@ -93,6 +217,24 @@ def _render_registration_details(registration):
 
     return tpl.render_registration_details(registration=registration, payment_enabled=event.has_feature('payment'),
                                            assigned_tags=assigned_tags, all_tags=all_tags)
+
+
+class RHRegistrationsListAllCSV(RHManageRegFormsBase):
+    """List of all non-deleted registrations (for managers)."""
+
+    def _process(self):
+        table = _get_merged_registrations(self.event)
+
+        # Change to the format expected by send_csv().
+        headers = table['headers']
+        newrows = []
+        for row in table['rows']:
+            newrow = {}
+            for h, c in zip(headers, row['columns'], strict=True):
+                newrow[h] = c['text']
+            newrows.append(newrow)
+
+        return send_csv('registrations.csv', headers, newrows)
 
 
 class RHRegistrationsListManage(RHManageRegFormBase):

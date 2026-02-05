@@ -123,6 +123,11 @@
     {{ template_hook('extra-registration-settings', event=event) }}
     <div class="regform-list">
         <h3>{% trans %}List of registration forms{% endtrans %}</h3>
+            <div class="action-box">
+                <div class="section">
+                    <a href="exportAllCSV">Export all registrations as CSV</a>
+                </div>
+	    </div>
         {% for regform in regforms %}
             <div class="action-box">
                 <div class="section">
