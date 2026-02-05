@@ -26,6 +26,8 @@ class AccompanyingPerson(PersonMixin):
         # from previous years might not have them at all!), so we need to
         # specify default values.
         self.pronouns = entry.get('pronouns', '')
+        self.dietary = entry.get('dietary', '')
+        self.beverage = entry.get('beverage', '')
         self.tshirt = entry.get('tshirt', '')
         self.comments = entry.get('comments', '')
 
@@ -34,6 +36,8 @@ class AccompanyingPerson(PersonMixin):
             self.first_name,
             self.last_name,
             self.pronouns,
+            ', '.join(self.dietary),
+            ', '.join(self.beverage),
             self.tshirt,
             self.comments,
         ]
@@ -45,6 +49,8 @@ class AccompanyingPersonSchema(mm.Schema):
     firstName = fields.String(required=True, validate=not_empty)  # noqa: N815
     lastName = fields.String(required=True, validate=not_empty)  # noqa: N815
     pronouns = fields.String(required=False)
+    dietary = fields.List(fields.String(), required=False)
+    beverage = fields.List(fields.String(), required=False)
     tshirt = fields.String(required=False)
     comments = fields.String(required=False)
 

@@ -37,6 +37,19 @@ const PronounOptions = [
   "Other (please specify in the 'comments' box)",
 ];
 
+const DietaryRestrictions = [
+  'Vegetarian (no meat or fish)',
+  'Vegan (no meat, fish, dairy, eggs, or animal products)',
+  'Gluten-free (no wheat, barley, rye, or foods made from them)',
+  "Other (please specify in the 'comments' box)",
+];
+
+const BeverageOptions = [
+  'Caffeine-free beverages',
+  'Sugar-free beverages',
+  // Comment so that the linter allows this to be a list, not all one line.
+];
+
 const TShirtOptions = [
   'No t-shirt',
   'Small',
@@ -78,6 +91,30 @@ function AccompanyingPersonModal({value, header, onSubmit, onClose}) {
         description="Optional, for nametags"
       />
       <FinalDropdown
+        name="dietary"
+        label={Translate.string('Dietary Restrictions')}
+        options={DietaryRestrictions.map(dietary => ({
+          key: dietary,
+          value: dietary,
+          text: Translate.string(dietary),
+        }))}
+        selection
+        multiple
+        description="You may select multiple"
+      />
+      <FinalDropdown
+        name="beverage"
+        label={Translate.string('Beverage Preference')}
+        options={BeverageOptions.map(beverage => ({
+          key: beverage,
+          value: beverage,
+          text: Translate.string(beverage),
+        }))}
+        selection
+        multiple
+        description="You may select multiple"
+      />
+      <FinalDropdown
         name="tshirt"
         label={Translate.string('T-shirt')}
         options={TShirtOptions.map(tshirt => ({
@@ -98,6 +135,8 @@ AccompanyingPersonModal.propTypes = {
     firstName: PropTypes.string.isRequired,
     lastName: PropTypes.string.isRequired,
     pronouns: PropTypes.string,
+    dietary: PropTypes.array,
+    beverage: PropTypes.array,
     tshirt: PropTypes.string,
     comments: PropTypes.string,
   }),
@@ -112,6 +151,8 @@ AccompanyingPersonModal.defaultProps = {
     firstName: null,
     lastName: null,
     pronouns: null,
+    dietary: null,
+    beverage: null,
     tshirt: null,
     comments: null,
   },
@@ -217,6 +258,8 @@ function AccompanyingPersonsComponent({
             </span>
             <span style={{marginLeft: '2em'}}>
               {person.pronouns !== undefined && `(${person.pronouns}) | `}
+              {person.dietary !== undefined && `${person.dietary.join(', ')} | `}
+              {person.beverage !== undefined && `${person.beverage.join(', ')} | `}
               {person.tshirt !== undefined && `${person.tshirt} | `}
               {person.comments !== undefined && `${person.comments}`}
             </span>
@@ -283,6 +326,8 @@ AccompanyingPersonsComponent.propTypes = {
       firstName: PropTypes.string.isRequired,
       lastName: PropTypes.string.isRequired,
       pronouns: PropTypes.string,
+      dietary: PropTypes.array,
+      beverage: PropTypes.array,
       tshirt: PropTypes.string,
       comments: PropTypes.string,
     })
