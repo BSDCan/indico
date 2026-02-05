@@ -14,6 +14,7 @@ import {Button, Form, Label} from 'semantic-ui-react';
 
 import {
   FinalCheckbox,
+  FinalDropdown,
   FinalField,
   FinalInput,
   FinalTextArea,
@@ -28,6 +29,32 @@ import {PlacesLeft} from './PlacesLeftLabel';
 
 import '../../../styles/regform.module.scss';
 
+const PronounOptions = [
+  '(do not display)',
+  'he/him',
+  'she/her',
+  'they/them',
+  "Other (please specify in the 'comments' box)",
+];
+
+const TShirtOptions = [
+  'No t-shirt',
+  'Small',
+  'Medium',
+  'Large',
+  'XL',
+  '2XL',
+  '3XL',
+  '4XL',
+  '5XL',
+  'Ladies Small',
+  'Ladies Medium',
+  'Ladies Large',
+  'Ladies XL',
+  'Ladies 2XL',
+  'Ladies 3XL',
+];
+
 function AccompanyingPersonModal({value, header, onSubmit, onClose}) {
   return (
     <FinalModalForm
@@ -39,6 +66,27 @@ function AccompanyingPersonModal({value, header, onSubmit, onClose}) {
     >
       <FinalInput name="firstName" label={Translate.string('First Name')} required autoFocus />
       <FinalInput name="lastName" label={Translate.string('Last Name')} required />
+      <FinalDropdown
+        name="pronouns"
+        label={Translate.string('Pronouns')}
+        options={PronounOptions.map(pronoun => ({
+          key: pronoun,
+          value: pronoun,
+          text: Translate.string(pronoun),
+        }))}
+        selection
+        description="Optional, for nametags"
+      />
+      <FinalDropdown
+        name="tshirt"
+        label={Translate.string('T-shirt')}
+        options={TShirtOptions.map(tshirt => ({
+          key: tshirt,
+          value: tshirt,
+          text: Translate.string(tshirt),
+        }))}
+        selection
+      />
       <FinalTextArea name="comments" label={Translate.string('Comments')} />
     </FinalModalForm>
   );
@@ -49,6 +97,8 @@ AccompanyingPersonModal.propTypes = {
     id: PropTypes.string.isRequired,
     firstName: PropTypes.string.isRequired,
     lastName: PropTypes.string.isRequired,
+    pronouns: PropTypes.string,
+    tshirt: PropTypes.string,
     comments: PropTypes.string,
   }),
   header: PropTypes.string.isRequired,
@@ -61,6 +111,8 @@ AccompanyingPersonModal.defaultProps = {
     id: null,
     firstName: null,
     lastName: null,
+    pronouns: null,
+    tshirt: null,
     comments: null,
   },
 };
@@ -164,6 +216,8 @@ function AccompanyingPersonsComponent({
               {person.firstName} {person.lastName}
             </span>
             <span style={{marginLeft: '2em'}}>
+              {person.pronouns !== undefined && `(${person.pronouns}) | `}
+              {person.tshirt !== undefined && `${person.tshirt} | `}
               {person.comments !== undefined && `${person.comments}`}
             </span>
             <div styleName="actions">
@@ -228,6 +282,8 @@ AccompanyingPersonsComponent.propTypes = {
       id: PropTypes.string.isRequired,
       firstName: PropTypes.string.isRequired,
       lastName: PropTypes.string.isRequired,
+      pronouns: PropTypes.string,
+      tshirt: PropTypes.string,
       comments: PropTypes.string,
     })
   ).isRequired,
