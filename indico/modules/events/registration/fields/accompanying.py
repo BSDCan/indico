@@ -23,6 +23,13 @@ class AccompanyingPerson(PersonMixin):
         self.first_name = entry['firstName']
         self.last_name = entry['lastName']
 
+    def display_str(self):
+        values = [
+            self.first_name,
+            self.last_name,
+        ]
+        return ' | '.join(values)
+
 
 class AccompanyingPersonSchema(mm.Schema):
     id = fields.UUID()
@@ -94,7 +101,7 @@ class AccompanyingPersonsField(RegistrationFormBillableField):
         reg_data = registration_data.data
         if not reg_data:
             return ''
-        return '; '.join(AccompanyingPerson(entry).display_full_name for entry in reg_data)
+        return '|| '.join(AccompanyingPerson(entry).display_str() for entry in reg_data)
 
     def _get_field_available_places(self, registration):
         max_persons = self.form_item.data.get('max_persons') or None
