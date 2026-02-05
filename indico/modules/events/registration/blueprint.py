@@ -146,6 +146,7 @@ _bp.add_url_rule('/manage/registration/<int:reg_form_id>/tickets/config', 'regis
 _bp.add_url_rule('/manage/registration/<int:reg_form_id>/badges/print/<int:template_id>/<uuid>',
                  'registrations_print_badges', reglists.RHRegistrationsPrintBadges)
 _bp.add_url_rule('/manage/registration/exportAllCSV', 'export_all_csv', reglists.RHRegistrationsListAllCSV)
+_bp.add_url_rule('/manage/registration/listAll', 'list_all', reglists.RHRegistrationsListAll)
 
 # Invitation management
 _bp.add_url_rule('/manage/registration/<int:reg_form_id>/invitations/', 'invitations',

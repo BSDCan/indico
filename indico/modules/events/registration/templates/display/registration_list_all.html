@@ -1,0 +1,114 @@
+{% if event.type == 'conference' %}
+    {% extends 'events/registration/display/_event_registration_base.html' %}
+{% else %}
+    {% extends 'events/registration/display/_meeting_registration_base.html' %}
+{% endif %}
+
+{% from 'message_box.html' import message_box %}
+
+{% block title %}
+    {{- page_title -}}
+{% endblock %}
+
+{% block subtitle %}
+    {% if num_registrations %}
+        {%- trans num=num_registrations %}1 registration{% pluralize %}{{ num }} registrations{% endtrans -%}
+    {% endif %}
+
+    <br><br>
+    <a href="exportAllCSV">Export all as CSV</a>
+    <br><br>
+    <a href="./">Back to main registration page</a>
+
+{% endblock %}
+
+{% macro table_header(columns, show_checkin) %}
+    <thead>
+        <tr class="i-table">
+            {% if show_checkin %}
+                <th class="i-table thin-column" data-sorter="false"></th>
+            {% endif %}
+            {% for column in columns %}
+                <th class="i-table" data-sorter="text">{{ column }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+{% endmacro %}
+
+{% macro table_row(registration, show_checkin) %}
+    <tr class="i-table">
+        {% if show_checkin %}
+            <td class="i-table center"
+                {% if registration.checked_in %}title="{% trans %}Checked in{% endtrans %}"{% endif %}>
+                {% if registration.checked_in %}<i class="icon-checkmark"></i>{% endif %}
+            </td>
+        {% endif %}
+        {% for column in registration.columns %}
+            <td class="i-table"
+                {% if column.sort_key %} data-text="{{ column.sort_key }}"{% endif %}>
+                {{ column.text }}
+            </td>
+        {% endfor %}
+{% endmacro %}
+
+{% macro registration_table(table) %}
+    <section>
+        {% set hidden_registrations = table.num_registrations - table.rows|length %}
+        {% if table.title %}
+            <div class="header">
+                <div class="header-row">
+                    <h3>{{ table.title }}</h3>
+                </div>
+            </div>
+        {% endif %}
+        {% if table.rows %}
+            <table class="i-table tablesorter" style="width: 200%; table-layout: auto !important;">
+                {{ table_header(table.headers, table.show_checkin) }}
+                <tbody>
+                    {% for row in table.rows %}
+                        {{ table_row(row, table.show_checkin) }}
+                    {% endfor %}
+                    {% if hidden_registrations %}
+                        <tr class="i-table">
+                            <td class="i-table empty" colspan="{{ table.headers|length+1 if table.show_checkin else table.headers|length }}">
+                                {% trans num=hidden_registrations %}{{ num }} more registration{% pluralize %}{{ num }} more registrations{% endtrans %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        {% elif table.num_registrations %}
+            {% call message_box('info', fixed_width=true) %}
+                {% trans num=hidden_registrations %}There is {{ num }} hidden registration{% pluralize %}There are {{ num }} hidden registrations{% endtrans %}
+            {% endcall %}
+        {% else %}
+            {% call message_box('info', fixed_width=true) %}
+                {% trans %}There are no registrations yet.{% endtrans %}
+            {% endcall %}
+        {% endif %}
+    </section>
+{% endmacro %}
+
+{% block content %}
+    {% if not table %}
+        {% call message_box('info', fixed_width=true) %}
+            {% trans %}There are no published registrations.{% endtrans %}
+        {% endcall %}
+    {% elif not num_registrations %}
+        {% call message_box('info', fixed_width=true) %}
+            {% trans %}There are no registrations yet.{% endtrans %}
+        {% endcall %}
+    {% else %}
+        <div class="registrations list">
+            {{ registration_table(table) }}
+        </div>
+    {% endif %}
+
+    <script>
+        $('.registrations .tablesorter').tablesorter({
+            cssAsc: 'header-sort-asc',
+            cssDesc: 'header-sort-desc',
+            headerTemplate: ''
+        });
+    </script>
+{% endblock %}
