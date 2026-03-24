@@ -30,6 +30,8 @@ Upgrading to 3.3.12
 If you use Alma/Rocky (or any other RPM-based distribution), the SELinux config changed
 and you need to run the SELinux setup step once again; see the relevant docs for an
 :ref:`nginx-based setup <rpm-nginx-selinux>` and an :ref:`Apache-based setup <rpm-apache-selinux>`.
+Then run ``restorecon -R /opt/indico/{cache,tmp}`` to apply the updated SELinux policy to the
+related directories.
 
 Afterwards, follow the :ref:`PDF generation guide <latex>` to install Podman and
 configure Indico to use it.
