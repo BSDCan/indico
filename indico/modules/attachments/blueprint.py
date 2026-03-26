@@ -95,7 +95,7 @@ items = itertools.chain(event_object_url_prefixes.items(), [('category', [''])])
 for object_type, prefixes in items:
     for prefix in prefixes:
         if object_type == 'category':
-            prefix = '/category/<category_id>' + prefix
+            prefix = '/category/<int:category_id>' + prefix
         else:
             prefix = '/event/<int:event_id>' + prefix
         _bp.add_url_rule(prefix + '/attachments/<int:folder_id>/<int:attachment_id>/<filename>', 'download',
