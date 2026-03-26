@@ -165,7 +165,7 @@ redis==6.4.0
     # via
     #   -c requirements.txt
     #   pytest-redis
-requests==2.32.5
+requests==2.33.0
     # via
     #   -c requirements.txt
     #   docker
