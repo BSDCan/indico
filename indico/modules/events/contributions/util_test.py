@@ -60,7 +60,8 @@ def test_import_contributions(dummy_event, dummy_user):
     assert not changes
 
 
-def test_import_contributions_changes(db, dummy_event, dummy_user):
+@pytest.mark.usefixtures('db', 'dummy_user')
+def test_import_contributions_changes(dummy_event):
     original_start_dt = as_utc(datetime(2017, 11, 27, 8, 0, 0))
     original_end_dt = as_utc(datetime(2017, 11, 27, 12, 0, 0))
     dummy_event.start_dt = original_start_dt
@@ -96,7 +97,8 @@ def test_import_contributions_changes(db, dummy_event, dummy_user):
     assert len(changes) == 3
 
 
-def test_import_contributions_errors(db, dummy_event):
+@pytest.mark.usefixtures('db')
+def test_import_contributions_errors(dummy_event):
     original_start_dt = as_utc(datetime(2017, 11, 27, 8, 0, 0))
     original_end_dt = as_utc(datetime(2017, 11, 27, 12, 0, 0))
     dummy_event.start_dt = original_start_dt
