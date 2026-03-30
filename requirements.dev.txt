@@ -126,7 +126,7 @@ psycopg==3.3.3
     # via results
 psycopg-pool==3.3.0
     # via psycopg
-pygments==2.19.2
+pygments==2.20.0
     # via
     #   -c requirements.txt
     #   -r requirements.dev.in

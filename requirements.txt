@@ -257,7 +257,7 @@ pycparser==3.0
     # via cffi
 pydyf==0.12.1
     # via weasyprint
-pygments==2.19.2
+pygments==2.20.0
     # via
     #   -r requirements.in
     #   ipython
