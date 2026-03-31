@@ -69,7 +69,8 @@ def _update_pyproject(pyproject_path: Path, context: str):
 @click.option('-U', '--upgrade', is_flag=True, help='Upgrade all packages')
 @click.option('-P', '--upgrade-package', 'upgrade_packages', multiple=True, help='Upgrade the specified packages')
 @click.option('-N', '--no-plugins', is_flag=True, help='Do not touch plugin pyproject.toml files')
-def main(upgrade, upgrade_packages, no_plugins):
+@click.option('--exclude-newer', default='1 week', help='Package cooldown period')
+def main(upgrade, upgrade_packages, no_plugins, exclude_newer):
     """Compiles/upgrades the transitive Python dependencies.
 
     This tool is a simple wrapper for `uv pip compile` that handles all the
@@ -82,6 +83,8 @@ def main(upgrade, upgrade_packages, no_plugins):
         '--custom-compile-command',
         './bin/maintenance/compile-python-deps.py',
     )
+    if exclude_newer not in ('0', 'off', 'false', 'none'):
+        args += ('--exclude-newer', exclude_newer)
     if upgrade:
         args += ('-U',)
     elif upgrade_packages:
