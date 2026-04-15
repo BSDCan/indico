@@ -8,7 +8,7 @@
 import pytest
 
 from indico.modules.events.features.util import set_feature_enabled
-from indico.modules.events.registration import _registration_permissions
+from indico.modules.events.registration import REGISTRATION_PERMISSIONS
 from indico.modules.events.registration.controllers import management
 from indico.modules.events.registration.controllers.management import regforms, reglists
 
@@ -25,7 +25,7 @@ class TestRegistrationEditPermissionDefinition:
     """Test that the registration_edit permission is properly defined and registered."""
 
     def test_permission_in_registration_permissions(self):
-        assert 'registration_edit' in _registration_permissions
+        assert 'registration_edit' in REGISTRATION_PERMISSIONS
 
     def test_permission_grant_allows_management(self, dummy_event, create_user):
         user = create_user(99, email='focalpoint@example.test')
