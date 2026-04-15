@@ -11,6 +11,9 @@ Improvements
 ^^^^^^^^^^^^
 
 - Include keywords in contribution CSV/Excel exports (:pr:`7421`)
+- Add new permission that grants only participant management (create, edit and
+  delete registrations) without access to the registration form configuration
+  (:pr:`7419`, thanks :user:`moliholy, unconventionaldotdev`)
 
 Bugfixes
 ^^^^^^^^
