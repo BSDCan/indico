@@ -536,6 +536,7 @@ def modify_registration(registration, data, management=False, notify_user=True):
             update_registration_consent_to_publish(registration, consent_to_publish)
 
     registration.sync_state()
+    registration.set_modified()
     db.session.flush()
     # sanity check
     if billable_items_locked and old_price != registration.price:
@@ -585,6 +586,7 @@ def generate_spreadsheet_from_registrations(registrations, regform_items, static
     field_names = ['ID', 'Name']
     special_item_mapping = {
         'reg_date': ('Registration date', lambda x: x.submitted_dt),
+        'mod_date': ('Modification date', lambda x: x.modified_dt),
         'state': ('Registration state', lambda x: x.state.title),
         'price': ('Price', lambda x: x.render_price()),
         'checked_in': ('Checked in', lambda x: x.checked_in),
