@@ -19,6 +19,8 @@ Improvements
 - Add a "Code" (short name) to predefined affiliations (:pr:`7400`, thanks
   :user:`duartegalvao, unconventionaldotdev`)
 - Track the last modified timestamp of registrations (:pr:`7478`, thanks :user:`jbtwist`)
+- Pre-fill the registration form picture field with the user's custom profile
+  picture when available (:pr:`7447`, thanks :user:`moliholy, unconventionaldotdev`)
 
 Bugfixes
 ^^^^^^^^
