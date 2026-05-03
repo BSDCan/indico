@@ -71,8 +71,8 @@ const TShirtOptions = [
 const ReceptionOptions = [
   'No',
   // BSDCAN: only enable one 'Yes' at once (after testing is finished)
-  'Yes (free until May 1)',
-  // `Yes (cost $64)`,
+  // 'Yes (free until May 1)',
+  `Yes (cost $64)`,
   // Comment so that the linter allows this to be a list, not all one line.
 ];
 
