@@ -150,13 +150,14 @@ class RHContributionDisplay(RHContributionDisplayBase):
         can_manage = self.event.can_manage(session.user, permission='contributions')
         owns_abstract = contrib.abstract.user_owns(session.user) if contrib.abstract else None
         field_values = filter_field_values(contrib.field_values, can_manage, owns_abstract)
+        is_favorite = session.user is not None and contrib in session.user.favorite_contributions
         return self.view_class.render_template('display/contribution_display.html', self.event,
                                                contribution=contrib,
                                                show_author_link=_author_page_active(self.event),
                                                field_values=field_values,
                                                page_title=contrib.title,
                                                published=contribution_settings.get(self.event, 'published'),
-                                               favorite=(contrib in session.user.favorite_contributions))
+                                               favorite=is_favorite)
 
 
 class RHContributionJSON(RHContributionDisplayBase):
