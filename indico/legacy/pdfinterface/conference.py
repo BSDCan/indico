@@ -214,6 +214,8 @@ class RegistrantToPDF(PDFBase):
 
             if 'reg_date' in self.static_items:
                 _print_row(_('Registration date'), format_datetime(registration.submitted_dt))
+            if 'mod_date' in self.static_items and registration.modified_dt:
+                _print_row(_('Modification date'), format_datetime(registration.modified_dt))
             if 'state' in self.static_items:
                 _print_row(_('Registration state'), registration.state.title)
             if 'price' in self.static_items:
@@ -386,6 +388,8 @@ class RegistrantsListToPDF(PDFBase):
                 lp.append(Paragraph(f'<b>{escape(item.title)}</b>', text_format))
         if 'reg_date' in self.static_items:
             lp.append(Paragraph('<b>{}</b>'.format(_('Registration date')), text_format))
+        if 'mod_date' in self.static_items:
+            lp.append(Paragraph('<b>{}</b>'.format(_('Modification date')), text_format))
         if 'state' in self.static_items:
             lp.append(Paragraph('<b>{}</b>'.format(_('Registration state')), text_format))
         if 'price' in self.static_items:
@@ -432,6 +436,11 @@ class RegistrantsListToPDF(PDFBase):
                     lp.append(Paragraph(escape(str(friendly_data)), text_format))
             if 'reg_date' in self.static_items:
                 lp.append(Paragraph(format_datetime(registration.submitted_dt), text_format))
+            if 'mod_date' in self.static_items:
+                if registration.modified_dt:
+                    lp.append(Paragraph(format_datetime(registration.modified_dt), text_format))
+                else:
+                    lp.append(Paragraph('', text_format))
             if 'state' in self.static_items:
                 lp.append(Paragraph(registration.state.title, text_format))
             if 'price' in self.static_items:
